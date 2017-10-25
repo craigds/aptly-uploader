@@ -6,7 +6,9 @@ import argparse
 import os
 import sys
 
-import requests
+from requests import Session
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
 
 
 def main():
@@ -14,6 +16,7 @@ def main():
     parser.add_argument('--aptly-url', help="Base URL for aptly")
     parser.add_argument('--repo', help="Which repo to upload files into")
     parser.add_argument('--series', default='trusty', help="Which series to publish, after uploading files")
+    parser.add_argument('--retries', action='store', default=0, type=int, help="How many times to retry if we get server errors")
     parser.add_argument('debs', nargs='+', type=argparse.FileType(mode='r'), help="The deb file(s) to upload to aptly")
     args = parser.parse_args()
 
@@ -21,8 +24,12 @@ def main():
     username = os.environ['APTLY_UNAME']
     password = os.environ['APTLY_PASSWD']
 
-    session = requests.Session()
+    session = Session()
     session.auth = (username, password)
+
+    if args.retries:
+        retries = Retry(total=args.retries, status_forcelist=list(range(500, 600)))
+        session.mount(args.aptly_url, HTTPAdapter(max_retries=retries))
 
     for deb in args.debs:
         basename = os.path.basename(deb.name)
