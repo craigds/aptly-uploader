@@ -12,7 +12,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='aptly-uploader',
-    version='0.2',
+    version='0.3',
     description='Upload deb files to aptly',
     url='https://github.com/craigds/aptly-uploader',
     author='Craig de Stigter',
