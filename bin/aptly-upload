@@ -11,6 +11,17 @@ from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 
 
+def check_repo_copy(r):
+    r.raise_for_status()
+    try:
+        failed = r.json()['FailedFiles']
+    except (ValueError, KeyError):
+        raise ValueError("Couldn't parse response: %r" % r.text)
+
+    if failed:
+        raise ValueError("Aptly returned a failure message:\n%s" % r.text)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--aptly-url', help="Base URL for aptly")
@@ -49,7 +60,7 @@ def main():
         # Copy uploaded file to repo
         url = '%s/api/repos/%s/file/%s/%s' % (args.aptly_url, args.repo, package_name, basename)
         r = session.post(url, data={})
-        r.raise_for_status()
+        check_repo_copy(r)
 
     # Tell repo to refresh and publish latest uploads
     print("Publishing repo", file=sys.stderr)

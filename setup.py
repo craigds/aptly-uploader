@@ -2,17 +2,12 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 
-from setuptools import setup, find_packages
-
-from codecs import open
-from os import path
-
-here = path.abspath(path.dirname(__file__))
+from setuptools import setup
 
 
 setup(
     name='aptly-uploader',
-    version='0.3.1',
+    version='0.3.2',
     description='Upload deb files to aptly',
     url='https://github.com/craigds/aptly-uploader',
     author='Craig de Stigter',
