@@ -26,9 +26,24 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--aptly-url', help="Base URL for aptly")
     parser.add_argument('--repo', help="Which repo to upload files into")
-    parser.add_argument('--series', default='trusty', help="Which series to publish, after uploading files")
-    parser.add_argument('--retries', action='store', default=0, type=int, help="How many times to retry if we get server errors")
-    parser.add_argument('debs', nargs='+', type=argparse.FileType(mode='rb'), help="The deb file(s) to upload to aptly")
+    parser.add_argument(
+        '--series',
+        default='trusty',
+        help="Which series to publish, after uploading files",
+    )
+    parser.add_argument(
+        '--retries',
+        action='store',
+        default=0,
+        type=int,
+        help="How many times to retry if we get server errors",
+    )
+    parser.add_argument(
+        'debs',
+        nargs='+',
+        type=argparse.FileType(mode='rb'),
+        help="The deb file(s) to upload to aptly",
+    )
     args = parser.parse_args()
 
     username = os.environ['APTLY_UNAME']
@@ -58,7 +73,12 @@ def main():
         r.raise_for_status()
 
         # Copy uploaded file to repo
-        url = '%s/api/repos/%s/file/%s/%s' % (args.aptly_url, args.repo, package_name, basename)
+        url = '%s/api/repos/%s/file/%s/%s' % (
+            args.aptly_url,
+            args.repo,
+            package_name,
+            basename,
+        )
         r = session.post(url, data={})
         check_repo_copy(r)
 
