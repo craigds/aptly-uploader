@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name='aptly-uploader',
-    version='0.3.2',
+    version='0.4',
     description='Upload deb files to aptly',
     url='https://github.com/craigds/aptly-uploader',
     author='Craig de Stigter',
@@ -18,10 +18,7 @@ setup(
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
     packages=[],

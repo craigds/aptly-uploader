@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
+#!/usr/bin/env python3
 import argparse
 import os
 import sys
@@ -15,11 +12,11 @@ def check_repo_copy(r):
     r.raise_for_status()
     try:
         failed = r.json()['FailedFiles']
-    except (ValueError, KeyError):
-        raise ValueError("Couldn't parse response: %r" % r.text)
+    except (ValueError, KeyError) as e:
+        raise ValueError("Couldn't parse response") from e
 
     if failed:
-        raise ValueError("Aptly returned a failure message:\n%s" % r.text)
+        raise ValueError(f"Aptly returned a failure message:\n{r.text}")
 
 
 def main():
@@ -65,26 +62,21 @@ def main():
         if not package_name:
             raise ValueError("Filename must refer to a debian package")
 
-        print("Uploading %s" % basename, file=sys.stderr)
+        print(f"Uploading {basename}", file=sys.stderr)
 
         # Upload file
-        url = '%s/api/files/%s' % (args.aptly_url, package_name)
+        url = f'{args.aptly_url}/api/files/{package_name}'
         r = session.post(url, files={basename: deb})
         r.raise_for_status()
 
         # Copy uploaded file to repo
-        url = '%s/api/repos/%s/file/%s/%s' % (
-            args.aptly_url,
-            args.repo,
-            package_name,
-            basename,
-        )
+        url = f'{args.aptly_url}/api/repos/{args.repo}/file/{package_name}/{basename}'
         r = session.post(url, data={})
         check_repo_copy(r)
 
     # Tell repo to refresh and publish latest uploads
     print("Publishing repo", file=sys.stderr)
-    url = '%s/api/publish/%s/%s' % (args.aptly_url, args.repo, args.series)
+    url = f'{args.aptly_url}/api/publish/{args.repo}/{args.series}'
     r = session.put(url, data='{}', headers={'Content-Type': 'application/json'})
     r.raise_for_status()
 
